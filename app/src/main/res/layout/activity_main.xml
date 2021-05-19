@@ -4,36 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="org.dieschnittstelle.mobile.android.skeleton.MainActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:context="org.dieschnittstelle.mobile.android.skeleton.MainActivity">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:text="Welcome 1"
-            android:textSize="30sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Welcome 2!"
-            android:textSize="30sp"
-            android:padding="15dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Welcome 3!"
-            android:textSize="30sp"
-            android:padding="15dp" />
-    </LinearLayout>
+    </ListView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addNewItemButton"

@@ -3,9 +3,8 @@ package org.dieschnittstelle.mobile.android.skeleton;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,33 +12,42 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.w3c.dom.Text;
+import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewGroup listView;
+    private ListView listView;
+    private List<DataItem> items = Stream.of("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10")
+            .map(name -> new DataItem(name, "Description"))
+            .collect(Collectors.toList());
+    private ArrayAdapter<DataItem> listViewAdapter;
     private FloatingActionButton addNewItemButton;
     private  int CALL_DETAILVIEW_FOR_CREATE = 0;
+    private static String logTag = "MainView";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.listView = findViewById(R.id.listView);
+        this.listViewAdapter = new ArrayAdapter<>(this,R.layout.activity_main_list_item, R.id.itemName, this.items);
+        this.listView.setAdapter(this.listViewAdapter);
         this.addNewItemButton = findViewById(R.id.addNewItemButton);
-        for (int i = 0; i < listView.getChildCount(); i++) {
-            TextView currentChild = (TextView) this.listView.getChildAt(i);
-            currentChild.setOnClickListener(v -> {
-                onItemSelected(currentChild.getText() + " selected.");
-            });
-        }
+        this.listView.setOnItemClickListener((parent, view, position, id) -> {
+            DataItem selectedItem = listViewAdapter.getItem(position);
+            onItemSelected(selectedItem);
+        });
         this.addNewItemButton.setOnClickListener(v -> this.onItemCreationRequested());
     }
 
-    protected void onItemSelected(String itemName) {
-
+    protected void onItemSelected(DataItem item) {
+        item.setSelected(true);
         Intent detailViewIntent  = new Intent(this, DetailViewActivity.class);
-        detailViewIntent.putExtra(DetailViewActivity.ARG_ITEM, itemName);
+        detailViewIntent.putExtra(DetailViewActivity.ARG_ITEM, item);
         this.startActivity(detailViewIntent);
 
     }
@@ -49,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==CALL_DETAILVIEW_FOR_CREATE){
             if(resultCode == Activity.RESULT_OK){
-                this.onNewItemCreated(data.getStringExtra(DetailViewActivity.ARG_ITEM));
+                this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
             }else{
                 showFeedbackMessage("Returning from detailView with:" + resultCode);
             }
@@ -62,14 +70,15 @@ public class MainActivity extends AppCompatActivity {
         this.startActivityForResult(detailViewForCreateIntent, CALL_DETAILVIEW_FOR_CREATE);
     }
     protected void showFeedbackMessage(String msg) {
-        Snackbar.make(findViewById(R.id.rootView), msg, Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(findViewById(R.id.rootView), msg, Snackbar.LENGTH_SHORT).show();
 
     }
-    protected void onNewItemCreated(String itemName){
+    protected void onNewItemCreated(DataItem item){
         //showFeedbackMessage("Created item: " + itemName);
-        TextView newItemView = (TextView) getLayoutInflater().inflate(R.layout.activity_main_list_item, null);
-        newItemView.setText(itemName);
-        this.listView.addView(newItemView);
+        //TextView newItemView = (TextView) getLayoutInflater().inflate(R.layout.activity_main_list_item, null);
+        //newItemView.setText(itemName);
+        this.listViewAdapter.add(item);
+        this.listView.setSelection(this.listViewAdapter.getPosition(item));
 
     }
 }

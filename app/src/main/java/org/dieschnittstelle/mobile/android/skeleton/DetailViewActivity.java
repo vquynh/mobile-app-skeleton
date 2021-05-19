@@ -10,11 +10,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+
 public class DetailViewActivity extends AppCompatActivity {
 
     public static final String ARG_ITEM = "item";
-    private String item;
+    private DataItem item;
     private EditText itemNameText;
+    private EditText itemDescription;
     private FloatingActionButton saveButton;
 
     @Override
@@ -25,22 +28,27 @@ public class DetailViewActivity extends AppCompatActivity {
         // Read elements
         saveButton = findViewById(R.id.saveButton);
         itemNameText = findViewById(R.id.itemName);
+        itemDescription = findViewById(R.id.itemDescription);
 
         // Make elements interactive
         saveButton.setOnClickListener(v -> this.onSaveItem());
 
         // Fill view with data
-        item = getIntent().getStringExtra(ARG_ITEM);
+        item = (DataItem) getIntent().getSerializableExtra(ARG_ITEM);
 
         if(item!=null){
-            itemNameText.setText(item);
+            itemNameText.setText(item.getItemName());
+            itemDescription.setText(item.getDescription());
+        }else{
+            item = new DataItem();
         }
     }
 
     private void onSaveItem() {
-        String itemName = this.itemNameText.getText().toString();
+        item.setItemName(this.itemNameText.getText().toString());
+        item.setDescription(this.itemDescription.getText().toString());
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(ARG_ITEM, itemName);
+        returnIntent.putExtra(ARG_ITEM, item);
         this.setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
