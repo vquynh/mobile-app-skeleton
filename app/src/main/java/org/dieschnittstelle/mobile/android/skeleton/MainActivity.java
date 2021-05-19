@@ -1,11 +1,16 @@
 package org.dieschnittstelle.mobile.android.skeleton;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +35,31 @@ public class MainActivity extends AppCompatActivity {
     private  int CALL_DETAILVIEW_FOR_CREATE = 0;
     private static String logTag = "MainView";
 
+    private class DataItemsAdapter extends ArrayAdapter<DataItem>{
+        private int layoutResource;
+        public DataItemsAdapter(@NonNull @NotNull Context context, int resource, @NonNull @NotNull List<DataItem> objects) {
+            super(context, resource, objects);
+            this.layoutResource = resource;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            DataItem currentItem = getItem(position);
+            View currentView = getLayoutInflater().inflate(this.layoutResource, null);
+            TextView itemNameText = currentView.findViewById(R.id.itemName);
+            itemNameText.setText(currentItem.getItemName());
+
+            return currentView;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.listView = findViewById(R.id.listView);
-        this.listViewAdapter = new ArrayAdapter<>(this,R.layout.activity_main_list_item, R.id.itemName, this.items);
+        this.listViewAdapter = new DataItemsAdapter(this,R.layout.activity_main_list_item, this.items);
         this.listView.setAdapter(this.listViewAdapter);
         this.addNewItemButton = findViewById(R.id.addNewItemButton);
         this.listView.setOnItemClickListener((parent, view, position, id) -> {
