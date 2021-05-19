@@ -6,7 +6,7 @@ public class DataItem implements Serializable {
     //private static final long serializedUid = -1L;
     private String itemName;
     private String description;
-    private boolean selected;
+    private boolean checked;
 
     public DataItem() {
     }
@@ -14,7 +14,7 @@ public class DataItem implements Serializable {
     public DataItem(String itemName, String description) {
         this.itemName = itemName;
         this.description = description;
-        this.selected = false;
+        this.checked = false;
     }
 
     public String getItemName() {
@@ -33,12 +33,12 @@ public class DataItem implements Serializable {
         this.description = description;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public boolean isChecked() {
+        return checked;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DataItem implements Serializable {
         return "DataItem{" +
                 "itemName='" + itemName + '\'' +
                 ", description='" + description + '\'' +
-                ", selected=" + selected +
+                ", selected=" + checked +
                 '}';
     }
 }

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <CheckBox
-        android:focusable="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/itemChecked"/>
-    <TextView
-        android:id="@+id/itemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:padding="15dp" />
-</LinearLayout>
+<layout>
+    <data>
+        <variable
+            name="item"
+            type="org.dieschnittstelle.mobile.android.skeleton.model.DataItem" />
+        <variable
+            name="controller"
+            type="org.dieschnittstelle.mobile.android.skeleton.MainActivity" />
+    </data>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:focusable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@={item.setChecked}"
+            android:onClick="@{()->controller.onCheckedChangedInListView(item)}"
+            android:id="@+id/itemChecked"/>
+        <TextView
+            android:id="@+id/itemName"
+            android:text="@{item.itemName}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:padding="15dp" />
+    </LinearLayout>
+</layout>

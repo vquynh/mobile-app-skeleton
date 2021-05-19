@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -13,10 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityMainListItemBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +30,9 @@ import java.util.stream.Stream;
 public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
-    private List<DataItem> items = Stream.of("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10")
+    private List<DataItem> items = Stream.of("Item 1", "Item 2", "Item 3",
+            "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9",
+            "Item 10", "Item 11", "Item 12", "Item 13")
             .map(name -> new DataItem(name, "Description"))
             .collect(Collectors.toList());
     private ArrayAdapter<DataItem> listViewAdapter;
@@ -45,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            Log.i(logTag,"getView(): for position" + position + " and convertView" + convertView);
             DataItem currentItem = getItem(position);
-            View currentView = getLayoutInflater().inflate(this.layoutResource, null);
-            TextView itemNameText = currentView.findViewById(R.id.itemName);
-            itemNameText.setText(currentItem.getItemName());
-
-            return currentView;
+            ActivityMainListItemBinding currentBinding = DataBindingUtil
+                    .inflate(getLayoutInflater(), this.layoutResource, null, false);
+            currentBinding.setItem(currentItem);
+            currentBinding.setController(MainActivity.this);
+            return currentBinding.getRoot();
         }
     }
 
@@ -70,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onItemSelected(DataItem item) {
-        item.setSelected(true);
+        item.setChecked(true);
         Intent detailViewIntent  = new Intent(this, DetailViewActivity.class);
         detailViewIntent.putExtra(DetailViewActivity.ARG_ITEM, item);
         this.startActivity(detailViewIntent);
@@ -105,5 +111,9 @@ public class MainActivity extends AppCompatActivity {
         this.listViewAdapter.add(item);
         this.listView.setSelection(this.listViewAdapter.getPosition(item));
 
+    }
+
+    public void onCheckedChangedInListView(DataItem item){
+        item.setChecked(true);
     }
 }
