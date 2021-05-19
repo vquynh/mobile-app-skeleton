@@ -17,7 +17,7 @@
             android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="@={item.setChecked}"
+            android:checked="@={item.checked}"
             android:onClick="@{()->controller.onCheckedChangedInListView(item)}"
             android:id="@+id/itemChecked"/>
         <TextView
