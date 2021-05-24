@@ -25,31 +25,40 @@
                 <requestFocus/>
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/itemChecked"
+            android:text="checked"
+            android:checked="@{controller.item.checked}"
+            app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/itemDescriptionWrapper"
             app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
             app:hintEnabled="true"
-            android:id="@+id/itemDescriptionWrapper"
             android:hint="Description"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/itemDescription"
+                android:gravity="start"
+                android:text="@={controller.item.description}"
                 android:lines="10"
                 android:minLines="5"
-                android:gravity="start"
-                android:id="@+id/itemDescription"
-                android:text="@={controller.item.description}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/baseline_save_white_24dp"
             android:onClick="@{() -> controller.onSaveItem()}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="16dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

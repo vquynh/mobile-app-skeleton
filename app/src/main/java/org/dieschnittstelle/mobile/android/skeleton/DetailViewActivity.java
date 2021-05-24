@@ -37,8 +37,6 @@ public class DetailViewActivity extends AppCompatActivity {
     }
 
     public void onSaveItem() {
-        item.setItemName(this.itemNameText.getText().toString());
-        item.setDescription(this.itemDescription.getText().toString());
         Intent returnIntent = new Intent();
         returnIntent.putExtra(ARG_ITEM, item);
         this.setResult(Activity.RESULT_OK, returnIntent);

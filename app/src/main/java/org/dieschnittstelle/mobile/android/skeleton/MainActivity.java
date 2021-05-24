@@ -32,11 +32,16 @@ import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int CALL_DETAILVIEW_FOR_EDIT = 1;
     private ListView listView;
     private List<DataItem> items = Stream.of("Item 1", "Item 2", "Item 3",
             "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9",
             "Item 10", "Item 11", "Item 12", "Item 13")
-            .map(name -> new DataItem(name, "Description"))
+            .map(name -> {
+                DataItem dataItem =new DataItem(name, "Description");
+                dataItem.setId(DataItem.nextId());
+                return dataItem;
+            })
             .collect(Collectors.toList());
     private ArrayAdapter<DataItem> listViewAdapter;
     private FloatingActionButton addNewItemButton;
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         item.setChecked(true);
         Intent detailViewIntent  = new Intent(this, DetailViewActivity.class);
         detailViewIntent.putExtra(DetailViewActivity.ARG_ITEM, item);
-        this.startActivity(detailViewIntent);
+        this.startActivityForResult(detailViewIntent, CALL_DETAILVIEW_FOR_EDIT);
 
     }
 
@@ -119,8 +124,28 @@ public class MainActivity extends AppCompatActivity {
                 this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
             }else{
                 showFeedbackMessage("Returning from detailView with:" + resultCode);
+
             }
+        }else if(requestCode == CALL_DETAILVIEW_FOR_EDIT) {
+            if(resultCode == Activity.RESULT_OK){
+                DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
+                showFeedbackMessage("Updated item: " + editedItem.getItemName());
+                this.onItemEdited(editedItem);
+            }else {
+                showFeedbackMessage(" Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
+            }
+        }else {
+            showFeedbackMessage("Returning with requestCOde: " + requestCode + " and resultCode: " + resultCode);
         }
+    }
+
+    protected void onItemEdited(DataItem editedItem) {
+        int pos = this.items.indexOf(editedItem);
+        //Log.i(logTag, "Got position: " + pos);
+        this.items.remove(pos);
+        this.items.add(pos,editedItem);
+        this.listViewAdapter.notifyDataSetChanged();
+        this.listView.setSelection(pos);
     }
 
     protected void onItemCreationRequested(){
@@ -136,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         //showFeedbackMessage("Created item: " + itemName);
         //TextView newItemView = (TextView) getLayoutInflater().inflate(R.layout.activity_main_list_item, null);
         //newItemView.setText(itemName);
+        item.setId(DataItem.nextId());
         this.listViewAdapter.add(item);
         this.listView.setSelection(this.listViewAdapter.getPosition(item));
 
