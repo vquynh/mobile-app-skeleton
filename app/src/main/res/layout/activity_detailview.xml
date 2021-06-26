@@ -5,21 +5,25 @@
             name="controller"
             type="org.dieschnittstelle.mobile.android.skeleton.DetailViewActivity" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
         <com.google.android.material.textfield.TextInputLayout
             app:layout_constraintTop_toTopOf="parent"
             app:hintEnabled="true"
+            android:error="@{controller.errorStatus}"
             android:id="@+id/itemNameWrapper"
             android:hint="Name"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
             <com.google.android.material.textfield.TextInputEditText
-                android:singleLine="true"
+                android:onFocusChange="@{(v,c) -> controller.onNameInputCompleted(c)}"
+                android:onTextChanged="@{(a,s,b,c) -> controller.onNameInputChanged()}"
                 android:id="@+id/itemName"
                 android:text="@={controller.item.itemName}"
+                android:singleLine="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <requestFocus/>
@@ -36,7 +40,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemDescriptionWrapper"
-            app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
+            app:layout_constraintTop_toBottomOf="@+id/itemChecked"
             app:hintEnabled="true"
             android:hint="Description"
             android:layout_height="wrap_content"

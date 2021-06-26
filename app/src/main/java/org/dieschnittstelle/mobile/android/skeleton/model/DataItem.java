@@ -68,7 +68,7 @@ public class DataItem implements Serializable {
 
     public String getItemName() {
         Log.i(logTag," getName(): " + itemName);
-        return itemName;
+        return itemName == null ? "" : itemName;
     }
 
     public String getDescription() {

@@ -37,6 +37,7 @@ public class DetailViewActivity extends AppCompatActivity {
     private EditText itemNameText;
     private EditText itemDescription;
     private FloatingActionButton saveButton;
+    private String errorStatus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,8 +86,17 @@ public class DetailViewActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.selectContact){
             this.selectContact();
             return true;
+        } else if(item.getItemId() == R.id.sendSMS){
+            sendSms();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendSms() {
+        Uri smsUri = Uri.parse("smsto:00000");
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, smsUri);
+        smsIntent.putExtra("sms_body", item.getItemName() + ": " + item.getDescription());
+        startActivity(smsIntent);
     }
 
     @Override
@@ -154,24 +164,30 @@ public class DetailViewActivity extends AppCompatActivity {
         }
     }
 
-    public boolean onNameInputCompleted(TextView v, int actionId, KeyEvent event) {
-        Log.i(DETAIL_VIEW_ACTIVITY, "onEditAction(): " + actionId + ", " + event);
-        if(actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE){
-
+    public void onNameInputChanged() {
+        if(this.errorStatus != null){
+            this.errorStatus = null;
+            this.dataBindingHandle.setController(this);
         }
-        return false;
     }
 
-    public void onNameInputCompleted(View v, boolean hasFocus) {
-        Log.i(DETAIL_VIEW_ACTIVITY, "onNameInputCompleted(): " + v);
+    public void onNameInputCompleted(boolean hasFocus) {
+        Log.i(DETAIL_VIEW_ACTIVITY, "onNameInputCompleted(): " + hasFocus);
         if(!hasFocus){
             String itemName = item.getItemName();
             if(itemName != null && itemName.length() >= 3){
                 Log.i(DETAIL_VIEW_ACTIVITY, "Validation successful: " + itemName);
+                this.errorStatus = null;
 
             }else {
                 Log.i(DETAIL_VIEW_ACTIVITY, "Validation failed: " + itemName);
+                this.errorStatus = "Item's name is too short.";
+                this.dataBindingHandle.setController(this);
             }
         }
+    }
+
+    public String getErrorStatus() {
+        return errorStatus;
     }
 }
