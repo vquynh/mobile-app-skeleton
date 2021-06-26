@@ -3,10 +3,10 @@
     <data>
         <variable
             name="item"
-            type="org.dieschnittstelle.mobile.android.skeleton.model.DataItem" />
+            type="org.quynhnguyen.mobile.android.todoApp.model.DataItem" />
         <variable
             name="controller"
-            type="org.dieschnittstelle.mobile.android.skeleton.MainActivity" />
+            type="org.quynhnguyen.mobile.android.todoApp.MainActivity" />
     </data>
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

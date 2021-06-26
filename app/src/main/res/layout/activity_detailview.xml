@@ -3,7 +3,7 @@
     <data>
         <variable
             name="controller"
-            type="org.dieschnittstelle.mobile.android.skeleton.DetailViewActivity" />
+            type="org.quynhnguyen.mobile.android.todoApp.DetailViewActivity" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
