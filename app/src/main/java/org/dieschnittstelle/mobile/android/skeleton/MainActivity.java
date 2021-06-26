@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -22,9 +24,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityMainListItemBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+import org.dieschnittstelle.mobile.android.skeleton.model.IDataItemCRUDOperations;
+import org.dieschnittstelle.mobile.android.skeleton.model.impl.DataItemCRUDOperationsAsyncImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -34,20 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int CALL_DETAILVIEW_FOR_EDIT = 1;
     private ListView listView;
-    private List<DataItem> items = Stream.of("Item 1", "Item 2", "Item 3",
-            "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9",
-            "Item 10", "Item 11", "Item 12", "Item 13")
-            .map(name -> {
-                DataItem dataItem =new DataItem(name, "Description");
-                dataItem.setId(DataItem.nextId());
-                return dataItem;
-            })
-            .collect(Collectors.toList());
+    private List<DataItem> items = new ArrayList<>();
     private ArrayAdapter<DataItem> listViewAdapter;
     private FloatingActionButton addNewItemButton;
     private  int CALL_DETAILVIEW_FOR_CREATE = 0;
     private static String logTag = "MainView";
     private ProgressBar progressBar;
+    private DataItemCRUDOperationsAsyncImpl crudOperations;
 
     private class DataItemsAdapter extends ArrayAdapter<DataItem>{
         private int layoutResource;
@@ -88,13 +86,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        if(!((DataItemApplication) getApplication()).isServerAvailable()) {
+//            startActivity(new Intent(this, DetailViewActivity.class));
+//            return;
+//        }
+
         setContentView(R.layout.activity_main);
 
         // 1. access view elements
         this.listView = findViewById(R.id.listView);
         this.listViewAdapter = new DataItemsAdapter(this,R.layout.activity_main_list_item, this.items);
         this.listView.setAdapter(this.listViewAdapter);
-        this.progressBar = null;
+        this.progressBar = new ProgressBar(this);
         this.addNewItemButton = findViewById(R.id.addNewItemButton);
 
         this.listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -105,7 +109,15 @@ public class MainActivity extends AppCompatActivity {
 
         // 3. load data
         //listViewAdapter.addAll(readAllDataItems());
-        readAllDataItems(items -> listViewAdapter.addAll(items));
+        IDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
+        this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
+        //this.crudOperations = new DataItemCRUDOperationsAsyncImpl(new RetrofitRemoteDataItemCRUDOperationsImpl(), this, progressBar);
+        this.crudOperations.readAllDataItems(items ->
+        {
+            listViewAdapter.addAll(items);
+            this.sortListAndScrollToItem(null);
+
+        });
     }
 
     protected void onItemSelected(DataItem item) {
@@ -145,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         this.items.remove(pos);
         this.items.add(pos,editedItem);
         this.listViewAdapter.notifyDataSetChanged();
-        this.listView.setSelection(pos);
+        sortListAndScrollToItem(editedItem);
     }
 
     protected void onItemCreationRequested(){
@@ -161,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
         //showFeedbackMessage("Created item: " + itemName);
         //TextView newItemView = (TextView) getLayoutInflater().inflate(R.layout.activity_main_list_item, null);
         //newItemView.setText(itemName);
-        item.setId(DataItem.nextId());
-        this.listViewAdapter.add(item);
-        this.listView.setSelection(this.listViewAdapter.getPosition(item));
+        this.crudOperations.createDataItem(item, i -> this.listViewAdapter.add(i));
+        sortListAndScrollToItem(item);
 
     }
 
     public void onCheckedChangedInListView(DataItem item){
         item.setChecked(true);
+        this.crudOperations.updateDataItem(item, this::sortListAndScrollToItem);
     }
 
     protected void readAllDataItems(Consumer<List<DataItem>> onread) {
@@ -191,4 +203,35 @@ public class MainActivity extends AppCompatActivity {
             });
         }).start();
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.name_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.sortItems){
+            this.sortListAndScrollToItem(null);
+            return true;
+        }else{
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void sortListAndScrollToItem(DataItem item) {
+        sortItems(this.items);
+        this.listViewAdapter.notifyDataSetChanged();
+        if(item != null) {
+            int thisPosition = this.listViewAdapter.getPosition(item);
+            this.listView.setSelection(thisPosition);
+        }
+    }
+
+    private void sortItems(List<DataItem> items) {
+        items.sort(Comparator.comparing(DataItem::isChecked).thenComparing(DataItem::getItemName));
+    }
+
 }

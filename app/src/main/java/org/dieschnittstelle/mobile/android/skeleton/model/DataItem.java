@@ -1,20 +1,60 @@
 package org.dieschnittstelle.mobile.android.skeleton.model;
 
+import android.os.Build;
 import android.util.Log;
 
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.UUID;
+import androidx.annotation.RequiresApi;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+
+@Entity
 public class DataItem implements Serializable {
+
+    public static class ArrayListToStringDatabaseConverter {
+        @TypeConverter
+        public static ArrayList<String> fromString(String value){
+            if (value == null || value.isEmpty()){
+                return new ArrayList<>();
+            }
+            return new ArrayList<>(Arrays.asList(value.split(",")));
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @TypeConverter
+        public static String fromArrayList(ArrayList<String> value){
+            if(value == null || value.isEmpty()){
+                return "";
+            }
+            return String.join(",", value);
+        }
+    }
+
     protected static final String logTag = "DataItem";
     protected static long ID_GENERATOR = 0;
     public static long nextId() {
         return ++ID_GENERATOR;
     }
+    @SerializedName("name")
     private String itemName;
     private String description;
+
+    @SerializedName("done")
     private boolean checked;
+
+    //@Embedded
+    @TypeConverters(ArrayListToStringDatabaseConverter.class)
+    private ArrayList<String> contacts;
+
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     public DataItem() {
@@ -86,5 +126,16 @@ public class DataItem implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public ArrayList<String> getContacts() {
+        if(this.contacts == null){
+            this.contacts = new ArrayList<>();
+        }
+        return contacts;
+    }
+
+    public void setContacts(ArrayList<String> contacts) {
+        this.contacts = contacts;
     }
 }
