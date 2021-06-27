@@ -30,9 +30,6 @@ public class DetailViewActivity extends AppCompatActivity {
     private static final String DETAIL_VIEW_ACTIVITY = "DetailViewActivity";
     private DataItem item;
     private ActivityDetailviewBinding dataBindingHandle;
-    private EditText itemNameText;
-    private EditText itemDescription;
-    private FloatingActionButton saveButton;
     private String errorStatus;
 
     @Override

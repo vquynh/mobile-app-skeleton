@@ -19,6 +19,27 @@ import java.util.Objects;
 @Entity
 public class DataItem implements Serializable {
 
+    public long getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(long expiry) {
+        this.expiry = expiry;
+    }
+
+    public boolean isFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
+
+    // expirydate as long value
+    private long expiry;
+
+    // whether it is a favourite
+    private boolean favourite;
     public static class ArrayListToStringDatabaseConverter {
         @TypeConverter
         public static ArrayList<String> fromString(String value){
@@ -48,7 +69,8 @@ public class DataItem implements Serializable {
     private String description;
 
     @SerializedName("done")
-    private boolean checked;
+    private boolean done;
+
 
     //@Embedded
     @TypeConverters(ArrayListToStringDatabaseConverter.class)
@@ -63,7 +85,9 @@ public class DataItem implements Serializable {
     public DataItem(String itemName, String description) {
         this.itemName = itemName;
         this.description = description;
-        this.checked = false;
+        this.done = false;
+        this.favourite = false;
+        this.expiry = System.currentTimeMillis();
     }
 
     public String getItemName() {
@@ -77,7 +101,7 @@ public class DataItem implements Serializable {
     }
 
     public void setItemName(String itemName) {
-        Log.i(logTag," getDescription(): " + description);
+        Log.i(logTag," setName(): " + itemName);
 
         this.itemName = itemName;
     }
@@ -87,14 +111,14 @@ public class DataItem implements Serializable {
         this.description = description;
     }
 
-    public boolean isChecked() {
-        Log.i(logTag," isChecked(): " + checked);
-        return checked;
+    public boolean isDone() {
+        Log.i(logTag," isChecked(): " + done);
+        return done;
     }
 
-    public void setChecked(boolean checked) {
+    public void setDone(boolean checked) {
         Log.i(logTag," setChecked(): " + checked);
-        this.checked = checked;
+        this.done = checked;
     }
 
     public long getId() {
@@ -110,7 +134,7 @@ public class DataItem implements Serializable {
         return "DataItem{" +
                 "itemName='" + itemName + '\'' +
                 ", description='" + description + '\'' +
-                ", checked=" + checked +
+                ", checked=" + done +
                 ", id=" + id +
                 '}';
     }

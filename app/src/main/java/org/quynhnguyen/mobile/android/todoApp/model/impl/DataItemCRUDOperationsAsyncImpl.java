@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import org.quynhnguyen.mobile.android.todoApp.data.model.LoggedInUser;
+import org.quynhnguyen.mobile.android.todoApp.model.LoggedInUser;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperationsAsync;

@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onItemSelected(DataItem item) {
-        item.setChecked(true);
+        item.setDone(true);
         Intent detailViewIntent  = new Intent(this, DetailViewActivity.class);
         detailViewIntent.putExtra(DetailViewActivity.ARG_ITEM, item);
         this.startActivityForResult(detailViewIntent, CALL_DETAILVIEW_FOR_EDIT);
@@ -178,8 +178,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onCheckedChangedInListView(DataItem item){
-        item.setChecked(true);
+    public void onCheckedItemDoneInListView(DataItem item){
+        item.setDone(item.isDone());
+        this.crudOperations.updateDataItem(item, this::sortListAndScrollToItem);
+    }
+
+    public void onCheckedItemFavouriteInListView(DataItem item){
+        item.setFavourite(item.isFavourite());
         this.crudOperations.updateDataItem(item, this::sortListAndScrollToItem);
     }
 
@@ -211,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // TODO: add option menu for simulation action of deleting local/remote todos and sync data
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.sortItems){
@@ -231,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sortItems(List<DataItem> items) {
-        items.sort(Comparator.comparing(DataItem::isChecked).thenComparing(DataItem::getItemName));
+        items.sort(Comparator.comparing(DataItem::isDone).thenComparing(DataItem::getItemName));
     }
 
 }

@@ -33,7 +33,7 @@
         <CheckBox
             android:id="@+id/itemChecked"
             android:text="checked"
-            android:checked="@{controller.item.checked}"
+            android:checked="@{controller.item.done}"
             app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

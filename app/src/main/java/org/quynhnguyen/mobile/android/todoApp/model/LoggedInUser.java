@@ -1,4 +1,4 @@
-package org.quynhnguyen.mobile.android.todoApp.data.model;
+package org.quynhnguyen.mobile.android.todoApp.model;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository

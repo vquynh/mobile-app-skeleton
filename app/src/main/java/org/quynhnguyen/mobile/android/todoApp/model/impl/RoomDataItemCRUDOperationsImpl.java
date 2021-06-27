@@ -1,7 +1,9 @@
 package org.quynhnguyen.mobile.android.todoApp.model.impl;
 
 import android.content.Context;
+import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Database;
 import androidx.room.Insert;
@@ -9,7 +11,10 @@ import androidx.room.Query;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.Update;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import org.jetbrains.annotations.NotNull;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.User;
@@ -18,10 +23,31 @@ import java.util.List;
 
 public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
-    @Database(entities = {DataItem.class}, version = 1)
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        long timestamp = System.currentTimeMillis();
+        @Override
+        public void migrate(@NonNull @NotNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE DataItem "
+                    +"ADD COLUMN expiry INTEGER default " + timestamp);
+            database.execSQL("ALTER TABLE DataItem "
+                    +"ADD COLUMN favourite INTEGER default 0");
+        }
+    };
+
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        long timestamp = System.currentTimeMillis();
+        @Override
+        public void migrate(@NonNull @NotNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE DataItem "
+                    +"RENAME COLUMN checked TO done ");
+        }
+    };
+
+    @Database(entities = {DataItem.class}, version = 3)
     public static abstract class RoomDataItemDatabase extends RoomDatabase {
 
         public abstract RoomDataItemCRUDAccess getDao();
+
     }
 
     @Dao
@@ -43,7 +69,10 @@ public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
     private RoomDataItemCRUDAccess roomAccessor;
     public  RoomDataItemCRUDOperationsImpl(Context databaseOwner){
-        RoomDataItemDatabase db = Room.databaseBuilder(databaseOwner, RoomDataItemDatabase.class, "data-items-database").build();
+        RoomDataItemDatabase db = Room
+                .databaseBuilder(databaseOwner, RoomDataItemDatabase.class, "data-items-database")
+                .addMigrations(MIGRATION_2_3)
+                .build();
         this.roomAccessor = db.getDao();
     }
 

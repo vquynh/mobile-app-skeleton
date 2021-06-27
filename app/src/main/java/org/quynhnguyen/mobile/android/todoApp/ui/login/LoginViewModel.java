@@ -6,20 +6,13 @@ import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
 
-import org.quynhnguyen.mobile.android.todoApp.data.LoginRepository;
-import org.quynhnguyen.mobile.android.todoApp.data.Result;
-import org.quynhnguyen.mobile.android.todoApp.data.model.LoggedInUser;
+import org.quynhnguyen.mobile.android.todoApp.model.LoggedInUser;
 import org.quynhnguyen.mobile.android.todoApp.R;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
-    }
 
     LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
@@ -30,8 +23,6 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void updateLoginResult(LoggedInUser result) {
-        // can be launched in a separate asynchronous job
-
         if (result != null) {
             loginResult.setValue(new LoginResult(new LoggedInUserView(result.getDisplayName())));
         } else {
@@ -49,7 +40,6 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    // A placeholder username validation check
     private boolean isUserNameValid(String username) {
         if (username == null) {
             return false;
@@ -61,8 +51,7 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
+        return password != null && password.trim().length() == 6 && password.matches("^[0-9]+$");
     }
 }

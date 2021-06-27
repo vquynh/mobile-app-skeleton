@@ -1,7 +1,5 @@
 package org.quynhnguyen.mobile.android.todoApp.model;
 
-import org.quynhnguyen.mobile.android.todoApp.data.model.LoggedInUser;
-
 import java.util.List;
 import java.util.function.Consumer;
 

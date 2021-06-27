@@ -14,7 +14,7 @@ public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
         this.localCRUD = localCRUD;
         this.remoteCRUD = remoteCRUD;
     }
-
+    //TODO: synchronise remote and local database
     @Override
     public DataItem createDataItem(DataItem item) {
         remoteCRUD.createDataItem(item);
