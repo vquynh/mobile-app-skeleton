@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import org.quynhnguyen.mobile.android.todoApp.data.model.LoggedInUser;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperationsAsync;
+import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class DataItemCRUDOperationsAsyncImpl implements IDataItemCRUDOperationsAsync {
@@ -60,5 +63,21 @@ public class DataItemCRUDOperationsAsyncImpl implements IDataItemCRUDOperationsA
     @Override
     public void deleteDataItem(long id, Consumer<Boolean> onDeleted) {
 
+    }
+
+    @Override
+    public void authenticateUser(User user, Consumer<LoggedInUser> onAuthenticated) {
+        new Thread(() -> {
+            boolean authenticated = crudExecutor.authenticateUser(user);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            uiThreadProvider.runOnUiThread(() -> {
+                onAuthenticated.accept(authenticated ?
+                        new LoggedInUser(UUID.randomUUID().toString(), user.getEmail()) : null);
+            });
+        }).start();
     }
 }

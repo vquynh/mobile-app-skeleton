@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private List<DataItem> items = new ArrayList<>();
     private ArrayAdapter<DataItem> listViewAdapter;
     private FloatingActionButton addNewItemButton;
-    private  int CALL_DETAILVIEW_FOR_CREATE = 0;
+    private int CALL_DETAILVIEW_FOR_CREATE = 0;
     private static String logTag = "MainView";
     private ProgressBar progressBar;
     private DataItemCRUDOperationsAsyncImpl crudOperations;

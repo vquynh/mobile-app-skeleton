@@ -2,6 +2,7 @@ package org.quynhnguyen.mobile.android.todoApp.model.impl;
 
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
 
@@ -43,6 +44,16 @@ public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
     @Override
     public boolean deleteAllDataItem() {
         return false;
+    }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        return this.remoteCRUD != null && this.remoteCRUD.authenticateUser(user);
+    }
+
+    @Override
+    public boolean isRemote() {
+        return this.remoteCRUD != null;
     }
 
     public boolean deleteAllLocalDataItems() {

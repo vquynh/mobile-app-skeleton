@@ -16,13 +16,14 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name="org.quynhnguyen.mobile.android.todoApp.ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
-        <activity android:name="org.quynhnguyen.mobile.android.todoApp.MainActivity">
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name="org.quynhnguyen.mobile.android.todoApp.MainActivity">
         </activity>
         <activity android:name="org.quynhnguyen.mobile.android.todoApp.DetailViewActivity" />
     </application>

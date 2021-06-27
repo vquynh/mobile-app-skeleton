@@ -12,6 +12,7 @@ import androidx.room.Update;
 
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
 
@@ -77,6 +78,16 @@ public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
     @Override
     public boolean deleteAllDataItem() {
+        return false;
+    }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        return true;
+    }
+
+    @Override
+    public boolean isRemote() {
         return false;
     }
 }

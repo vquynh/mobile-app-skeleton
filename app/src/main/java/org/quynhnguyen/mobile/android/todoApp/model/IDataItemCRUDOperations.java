@@ -16,5 +16,9 @@ public interface IDataItemCRUDOperations {
 
     public boolean deleteAllDataItem();
 
+    public boolean authenticateUser(User user);
+
+    public boolean isRemote();
+
 
 }

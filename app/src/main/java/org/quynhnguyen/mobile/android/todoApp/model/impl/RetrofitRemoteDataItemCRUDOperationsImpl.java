@@ -2,6 +2,7 @@ package org.quynhnguyen.mobile.android.todoApp.model.impl;
 
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class RetrofitRemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOp
         @PUT("/api/todos/{id}")
         public Call<DataItem> updateTodo(@Path("id") long id, @Body DataItem item);
 
+        @PUT("/api/users/auth")
+        public Call<Boolean> authenticateUser(@Body User user);
+
         @DELETE("/api/todos/{id}")
         public Call<Boolean> deleteTodo(@Path("id") long id);
 
@@ -42,7 +46,7 @@ public class RetrofitRemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOp
 
     private TodoWebAPI webAPI;
 
-    public RetrofitRemoteDataItemCRUDOperationsImpl(){
+    public RetrofitRemoteDataItemCRUDOperationsImpl() {
         Retrofit apiBase = new Retrofit.Builder()
                 .baseUrl("http://192.168.178.69:8089/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -109,5 +113,20 @@ public class RetrofitRemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOp
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        try {
+            return this.webAPI.authenticateUser(user).execute().body();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isRemote() {
+        return true;
     }
 }
