@@ -19,6 +19,7 @@ public class DataItemApplication extends Application {
 
     protected static String logTag = "DataApplication";
     private IDataItemCRUDOperations crudOperations;
+    private boolean serverAvailable = false;
 
     @Override
     public void onCreate() {
@@ -30,6 +31,7 @@ public class DataItemApplication extends Application {
                 Toast.makeText(this, "Application started...", Toast.LENGTH_SHORT).show();
                 this.crudOperations = new SyncedDataItemCRUDOperationsImpl(
                         new RoomDataItemCRUDOperationsImpl(this), new RetrofitRemoteDataItemCRUDOperationsImpl());
+                this.serverAvailable = true;
             }else{
                 this.crudOperations = new RoomDataItemCRUDOperationsImpl(this);
             }
@@ -81,6 +83,6 @@ public class DataItemApplication extends Application {
     }
 
     public boolean isServerAvailable() {
-        return checkConnectivity();
+        return this.serverAvailable;
     }
 }

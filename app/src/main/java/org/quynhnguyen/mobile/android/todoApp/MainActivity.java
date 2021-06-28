@@ -27,6 +27,7 @@ import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
 import org.jetbrains.annotations.NotNull;
+import org.quynhnguyen.mobile.android.todoApp.ui.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,18 +38,18 @@ import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int CALL_DETAILVIEW_FOR_CREATE = 0;
     private static final int CALL_DETAILVIEW_FOR_EDIT = 1;
+    private static final int CALL_LOGIN_VIEW = 2;
+
     private ListView listView;
     private List<DataItem> items = new ArrayList<>();
     private ArrayAdapter<DataItem> listViewAdapter;
-    private FloatingActionButton addNewItemButton;
-    private int CALL_DETAILVIEW_FOR_CREATE = 0;
-    private static String logTag = "MainView";
     private ProgressBar progressBar;
     private DataItemCRUDOperationsAsyncImpl crudOperations;
 
     private class DataItemsAdapter extends ArrayAdapter<DataItem>{
-        private int layoutResource;
+        private final int layoutResource;
         public DataItemsAdapter(@NonNull @NotNull Context context, int resource, @NonNull @NotNull List<DataItem> objects) {
             super(context, resource, objects);
             this.layoutResource = resource;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(int position, @Nullable View recyclableItemView, @NonNull ViewGroup parent) {
+            String logTag = "MainView";
             Log.i(logTag,"getView(): for position" + position + " and convertView" + recyclableItemView);
             View itemView = null;
             DataItem currentItem = getItem(position);
@@ -87,10 +89,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        if(!((DataItemApplication) getApplication()).isServerAvailable()) {
-//            startActivity(new Intent(this, DetailViewActivity.class));
-//            return;
-//        }
+        if(((DataItemApplication) getApplication()).isServerAvailable()) {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
 
         setContentView(R.layout.activity_main);
 
@@ -99,13 +100,13 @@ public class MainActivity extends AppCompatActivity {
         this.listViewAdapter = new DataItemsAdapter(this,R.layout.activity_main_list_item, this.items);
         this.listView.setAdapter(this.listViewAdapter);
         this.progressBar = new ProgressBar(this);
-        this.addNewItemButton = findViewById(R.id.addNewItemButton);
+        FloatingActionButton addNewItemButton = findViewById(R.id.addNewItemButton);
 
         this.listView.setOnItemClickListener((parent, view, position, id) -> {
             DataItem selectedItem = listViewAdapter.getItem(position);
             onItemSelected(selectedItem);
         });
-        this.addNewItemButton.setOnClickListener(v -> this.onItemCreationRequested());
+        addNewItemButton.setOnClickListener(v -> this.onItemCreationRequested());
 
         // 3. load data
         //listViewAdapter.addAll(readAllDataItems());
@@ -131,24 +132,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==CALL_DETAILVIEW_FOR_CREATE){
-            if(resultCode == Activity.RESULT_OK){
-                this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
-            }else{
-                showFeedbackMessage("Returning from detailView with:" + resultCode);
+        switch (requestCode) {
+            case CALL_DETAILVIEW_FOR_CREATE:
+                if(resultCode == Activity.RESULT_OK){
+                    this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
+                }else{
+                    showFeedbackMessage("Returning from detailView with:" + resultCode);
 
-            }
-        }else if(requestCode == CALL_DETAILVIEW_FOR_EDIT) {
-            if(resultCode == Activity.RESULT_OK){
-                DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
-                showFeedbackMessage("Updated item: " + editedItem.getItemName());
-                this.onItemEdited(editedItem);
-            }else {
-                showFeedbackMessage(" Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
-            }
-        }else {
-            showFeedbackMessage("Returning with requestCOde: " + requestCode + " and resultCode: " + resultCode);
+                }
+            case CALL_DETAILVIEW_FOR_EDIT:
+                if(resultCode == Activity.RESULT_OK){
+                    DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
+                    showFeedbackMessage("Updated item: " + editedItem.getItemName());
+                    this.onItemEdited(editedItem);
+                }else {
+                    showFeedbackMessage(" Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
+                }
+            default:
+                showFeedbackMessage("Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
         }
+
     }
 
     protected void onItemEdited(DataItem editedItem) {

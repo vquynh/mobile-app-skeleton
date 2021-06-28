@@ -44,112 +44,107 @@ public class LoginActivity extends AppCompatActivity {
         IDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
 
-        if (!crudExecutor.isRemote()){
-            goToMainActivity();
-        }else {
-
-            binding = ActivityLoginBinding.inflate(getLayoutInflater());
-            setContentView(binding.getRoot());
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
 
-            loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(this.crudOperations))
-                    .get(LoginViewModel.class);
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(this.crudOperations))
+                .get(LoginViewModel.class);
 
-            final EditText usernameEditText = binding.username;
-            final EditText passwordEditText = binding.password;
-            final Button loginButton = binding.login;
-            final ProgressBar loadingProgressBar = binding.loading;
+        final EditText usernameEditText = binding.username;
+        final EditText passwordEditText = binding.password;
+        final Button loginButton = binding.login;
+        final ProgressBar loadingProgressBar = binding.loading;
 
 
-            loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
-                @Override
-                public void onChanged(@Nullable LoginFormState loginFormState) {
-                    if(snackbar != null && snackbar.isShown()){
-                        snackbar.dismiss();
-                    }
-                    if (loginFormState == null) {
-                        return;
-                    }
-                    loginButton.setEnabled(loginFormState.isDataValid());
-                    if (loginFormState.getUsernameError() != null) {
-                        usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                    }
-                    if (loginFormState.getPasswordError() != null) {
-                        passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                    }
+        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+            @Override
+            public void onChanged(@Nullable LoginFormState loginFormState) {
+                if(snackbar != null && snackbar.isShown()){
+                    snackbar.dismiss();
                 }
-            });
-
-            loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-                @Override
-                public void onChanged(@Nullable LoginResult loginResult) {
-                    if (loginResult == null) {
-                        return;
-                    }
-                    loadingProgressBar.setVisibility(View.GONE);
-                    if (loginResult.getError() != null) {
-                        showLoginFailed();
-
-                    }
-                    if (loginResult.getSuccess() != null) {
-                        goToMainActivity();
-                    }
-                    setResult(Activity.RESULT_OK);
-
-                    //Complete and destroy login activity once successful
-                    //finish();
+                if (loginFormState == null) {
+                    return;
                 }
-            });
-
-            TextWatcher afterTextChangedListener = new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // ignore
+                loginButton.setEnabled(loginFormState.isDataValid());
+                if (loginFormState.getUsernameError() != null) {
+                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // ignore
+                if (loginFormState.getPasswordError() != null) {
+                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
                 }
+            }
+        });
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                    loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
+            @Override
+            public void onChanged(@Nullable LoginResult loginResult) {
+                if (loginResult == null) {
+                    return;
                 }
-            };
-            usernameEditText.addTextChangedListener(afterTextChangedListener);
-            passwordEditText.addTextChangedListener(afterTextChangedListener);
-            passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                loadingProgressBar.setVisibility(View.GONE);
+                if (loginResult.getError() != null) {
+                    showLoginFailed();
 
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        User user = new User(usernameEditText.getText().toString(),
-                                passwordEditText.getText().toString());
-                        crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
-                    }
-                    return false;
                 }
-            });
+                if (loginResult.getSuccess() != null) {
+                    showLoginSuccessful();
+                }
+                setResult(Activity.RESULT_OK,new Intent());
 
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loadingProgressBar.setVisibility(View.VISIBLE);
+                //Complete and destroy login activity once successful
+                finish();
+            }
+        });
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+            }
+        };
+        usernameEditText.addTextChangedListener(afterTextChangedListener);
+        passwordEditText.addTextChangedListener(afterTextChangedListener);
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     User user = new User(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString());
                     crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
                 }
-            });
+                return false;
+            }
+        });
 
-        }
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                User user = new User(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+                crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
+            }
+        });
+
     }
 
-    private void goToMainActivity() {
+    private void showLoginSuccessful() {
 
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
-        this.startActivityForResult(mainActivityIntent, 0);
+        //Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        //this.startActivityForResult(mainActivityIntent, 0);
         Toast.makeText(getApplicationContext(), "Welcome to Todo App", Toast.LENGTH_LONG).show();
     }
 
