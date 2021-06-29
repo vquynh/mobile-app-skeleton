@@ -18,7 +18,6 @@ public interface IDataItemCRUDOperations {
 
     public boolean authenticateUser(User user);
 
-    public boolean isRemote();
 
 
 }

@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:checked="@={item.done}"
             android:onClick="@{()->controller.onCheckedItemDoneInListView(item)}"
-            android:id="@+id/itemChecked"/>
+            android:id="@+id/itemDone"/>
         <TextView
             android:id="@+id/itemName"
             android:text="@{item.itemName}"
@@ -28,6 +28,7 @@
             android:textSize="30sp"
             android:padding="15dp" />
         <ToggleButton
+            android:focusable="false"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="15dp"
@@ -39,5 +40,6 @@
             android:checked="@={item.favourite}"
             android:onClick="@{()->controller.onCheckedItemFavouriteInListView(item)}"
             />
+
     </LinearLayout>
 </layout>

@@ -156,15 +156,15 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onItemEdited(DataItem editedItem) {
         int pos = this.items.indexOf(editedItem);
-        //Log.i(logTag, "Got position: " + pos);
         this.items.remove(pos);
-        this.items.add(pos,editedItem);
-        this.listViewAdapter.notifyDataSetChanged();
+        this.crudOperations.updateDataItem(editedItem, item -> {
+            this.items.add(pos,item);
+            this.listViewAdapter.notifyDataSetChanged();
+        });
         sortListAndScrollToItem(editedItem);
     }
 
     protected void onItemCreationRequested(){
-        //this.showFeedbackMessage("New item creation requested");
         Intent detailViewForCreateIntent = new Intent(this, DetailViewActivity.class);
         this.startActivityForResult(detailViewForCreateIntent, CALL_DETAILVIEW_FOR_CREATE);
     }
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.name_menu, menu);
+        getMenuInflater().inflate(R.menu.sort_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

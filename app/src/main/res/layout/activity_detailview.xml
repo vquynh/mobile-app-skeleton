@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
             name="controller"
@@ -31,16 +31,69 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
-            android:id="@+id/itemChecked"
-            android:text="checked"
+            android:id="@+id/itemDone"
+            android:text="done"
             android:checked="@{controller.item.done}"
             app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <CheckBox
+            android:id="@+id/itemFavourite"
+            android:text="favourite"
+            android:checked="@{controller.item.favourite}"
+            app:layout_constraintTop_toBottomOf="@+id/itemDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/itemFavourite"
+            android:id="@+id/in_date" />
+
+        <Button
+            app:layout_constraintTop_toBottomOf="@+id/in_date"
+            android:id="@+id/datePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/in_date"
+            android:layout_toEndOf="@+id/in_date"
+            android:text="@string/expiry_date"
+            android:onClick="@{(v) -> controller.showDatePickerDialog(v)}" />
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/datePicker"
+            android:id="@+id/in_time"
+            android:layout_below="@+id/in_date"
+            />
+
+        <Button
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/in_time"
+            android:layout_alignBottom="@+id/in_time"
+            android:layout_toEndOf="@+id/in_time"
+            android:text="@string/expiry_time"
+            android:onClick="@{(v) -> controller.showTimePickerDialog(v)}" />
+
+        <ListView
+            android:id="@+id/contactList"
+            android:text="Contacts"
+            app:layout_constraintTop_toBottomOf="@+id/timePicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:context="org.quynhnguyen.mobile.android.todoApp.DetailViewActivity">
+        </ListView>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemDescriptionWrapper"
-            app:layout_constraintTop_toBottomOf="@+id/itemChecked"
+            app:layout_constraintTop_toBottomOf="@+id/contactList"
             app:hintEnabled="true"
             android:hint="Description"
             android:layout_height="wrap_content"

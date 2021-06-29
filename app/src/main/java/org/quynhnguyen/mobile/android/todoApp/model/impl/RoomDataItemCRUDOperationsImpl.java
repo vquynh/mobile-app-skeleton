@@ -114,9 +114,4 @@ public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
     public boolean authenticateUser(User user) {
         return true;
     }
-
-    @Override
-    public boolean isRemote() {
-        return false;
-    }
 }

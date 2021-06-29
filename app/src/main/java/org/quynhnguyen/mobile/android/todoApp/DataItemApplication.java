@@ -45,7 +45,6 @@ public class DataItemApplication extends Application {
     public IDataItemCRUDOperations getCRUDOperations(){
 
         return this.crudOperations;
-        //return new RetrofitRemoteDataItemCRUDOperationsImpl();
     }
 
     public Future<Boolean> checkConnectivityAsync(){

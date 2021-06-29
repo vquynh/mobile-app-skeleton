@@ -10,4 +10,6 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be numeric and exactly 6 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="expiry_date">"Choose expiry date"</string>
+    <string name="expiry_time">"Choose expiry time"</string>
 </resources>

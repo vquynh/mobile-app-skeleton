@@ -112,12 +112,12 @@ public class DataItem implements Serializable {
     }
 
     public boolean isDone() {
-        Log.i(logTag," isChecked(): " + done);
+        Log.i(logTag," isDone(): " + done);
         return done;
     }
 
     public void setDone(boolean checked) {
-        Log.i(logTag," setChecked(): " + checked);
+        Log.i(logTag," setDone(): " + checked);
         this.done = checked;
     }
 
@@ -132,9 +132,12 @@ public class DataItem implements Serializable {
     @Override
     public String toString() {
         return "DataItem{" +
-                "itemName='" + itemName + '\'' +
+                "expiry=" + expiry +
+                ", favourite=" + favourite +
+                ", itemName='" + itemName + '\'' +
                 ", description='" + description + '\'' +
-                ", checked=" + done +
+                ", done=" + done +
+                ", contacts=" + contacts +
                 ", id=" + id +
                 '}';
     }

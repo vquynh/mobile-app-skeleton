@@ -1,5 +1,6 @@
 package org.quynhnguyen.mobile.android.todoApp.model.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.User;
@@ -14,16 +15,29 @@ public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
         this.localCRUD = localCRUD;
         this.remoteCRUD = remoteCRUD;
     }
-    //TODO: synchronise remote and local database
     @Override
     public DataItem createDataItem(DataItem item) {
-        remoteCRUD.createDataItem(item);
+        DataItem createdItem = localCRUD.createDataItem(item);
+        remoteCRUD.createDataItem(createdItem);
         return item;
     }
 
     @Override
     public List<DataItem> readAllDataItems() {
-        return localCRUD.readAllDataItems();
+        return getDataItemsSynchronised();
+    }
+
+    @NotNull
+    private List<DataItem> getDataItemsSynchronised() {
+        List<DataItem> dataItems = localCRUD.readAllDataItems();
+        if(!dataItems.isEmpty()){
+            remoteCRUD.deleteAllDataItem();
+            dataItems.forEach(remoteCRUD::createDataItem);
+        }else{
+            dataItems = remoteCRUD.readAllDataItems();
+            dataItems.forEach(localCRUD::createDataItem);
+        }
+        return dataItems;
     }
 
     @Override
@@ -51,20 +65,11 @@ public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
         return this.remoteCRUD != null && this.remoteCRUD.authenticateUser(user);
     }
 
-    @Override
-    public boolean isRemote() {
-        return this.remoteCRUD != null;
+    public boolean deleteAllDataItems(boolean remote) {
+        return remote ? remoteCRUD.deleteAllDataItem() : localCRUD.deleteAllDataItem();
     }
 
-    public boolean deleteAllLocalDataItems() {
-        return false;
-    }
-
-    public boolean deleteAllRemoteDataItems() {
-        return remoteCRUD.deleteAllDataItem();
-    }
-
-    public boolean deleteAllRemoteDataItems(boolean remote) {
-        return remote ? deleteAllRemoteDataItems() : deleteAllLocalDataItems();
+    public void synchroniseData() {
+        getDataItemsSynchronised();
     }
 }

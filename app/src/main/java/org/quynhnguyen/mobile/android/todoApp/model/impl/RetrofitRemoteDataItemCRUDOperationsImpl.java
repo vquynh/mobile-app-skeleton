@@ -124,9 +124,4 @@ public class RetrofitRemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOp
             return false;
         }
     }
-
-    @Override
-    public boolean isRemote() {
-        return true;
-    }
 }
