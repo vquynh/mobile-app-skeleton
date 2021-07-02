@@ -1,7 +1,7 @@
-Technische Hochschule Lübeck - Studiengang Medieninformatik
-Mobile Application Development - Sommersemester 2021
-Thi Viet Quynh Nguyen
-thi.viet.quynh.nguyen@stud.th-luebeck.de
+### Technische Hochschule Lübeck - Studiengang Medieninformatik
+### Mobile Application Development - Sommersemester 2021
+#### Thi Viet Quynh Nguyen
+#### thi.viet.quynh.nguyen@stud.th-luebeck.de
 
 # Semesterprojekt: Todo App
 ## Funktionalitäten
