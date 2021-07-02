@@ -40,6 +40,8 @@ public class DataItem implements Serializable {
 
     // whether it is a favourite
     private boolean favourite;
+
+
     public static class ArrayListToStringDatabaseConverter {
         @TypeConverter
         public static ArrayList<String> fromString(String value){

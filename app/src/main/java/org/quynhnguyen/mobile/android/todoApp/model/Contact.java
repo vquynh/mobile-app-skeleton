@@ -5,12 +5,16 @@ public class Contact {
     private String displayName;
     private String mobileNumber;
     private String emailAddress;
+    private boolean canSendSms;
+    private boolean canSendEmail;
 
     public Contact(long id, String displayName, String mobileNumber, String emailAddress) {
         this.id = id;
         this.displayName = displayName;
         this.mobileNumber = mobileNumber;
         this.emailAddress = emailAddress;
+        this.canSendEmail = this.emailAddress != null && !this.emailAddress.isEmpty();
+        this.canSendSms = this.mobileNumber != null && !this.mobileNumber.isEmpty();
     }
 
     public long getId() {
@@ -43,5 +47,21 @@ public class Contact {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public boolean isCanSendSms() {
+        return this.canSendSms;
+    }
+
+    public void setCanSendSms(boolean canSendSms) {
+        this.canSendSms = canSendSms;
+    }
+
+    public boolean isCanSendEmail() {
+        return this.canSendEmail;
+    }
+
+    public void setCanSendEmail(boolean canSendEmail) {
+        this.canSendEmail = canSendEmail;
     }
 }

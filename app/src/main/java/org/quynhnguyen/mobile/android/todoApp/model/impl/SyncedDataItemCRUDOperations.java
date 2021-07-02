@@ -7,22 +7,23 @@ import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
 
-public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
+public class SyncedDataItemCRUDOperations {
     private final IDataItemCRUDOperations localCRUD;
     private final IDataItemCRUDOperations remoteCRUD;
 
-    public SyncedDataItemCRUDOperationsImpl(RoomDataItemCRUDOperationsImpl localCRUD, RetrofitRemoteDataItemCRUDOperationsImpl remoteCRUD) {
+    public SyncedDataItemCRUDOperations(RoomDataItemCRUDOperationsImpl localCRUD, RetrofitRemoteDataItemCRUDOperationsImpl remoteCRUD) {
         this.localCRUD = localCRUD;
         this.remoteCRUD = remoteCRUD;
     }
-    @Override
+
     public DataItem createDataItem(DataItem item) {
         DataItem createdItem = localCRUD.createDataItem(item);
-        remoteCRUD.createDataItem(createdItem);
+        if(remoteCRUD!= null){
+            remoteCRUD.createDataItem(createdItem);
+        }
         return item;
     }
 
-    @Override
     public List<DataItem> readAllDataItems() {
         return getDataItemsSynchronised();
     }
@@ -30,46 +31,46 @@ public class SyncedDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
     @NotNull
     private List<DataItem> getDataItemsSynchronised() {
         List<DataItem> dataItems = localCRUD.readAllDataItems();
-        if(!dataItems.isEmpty()){
-            remoteCRUD.deleteAllDataItem();
-            dataItems.forEach(remoteCRUD::createDataItem);
-        }else{
-            dataItems = remoteCRUD.readAllDataItems();
-            dataItems.forEach(localCRUD::createDataItem);
+        if(remoteCRUD != null){
+            if(!dataItems.isEmpty()){
+                remoteCRUD.deleteAllDataItem();
+                dataItems.forEach(remoteCRUD::createDataItem);
+            }else {
+                dataItems = remoteCRUD.readAllDataItems();
+                dataItems.forEach(localCRUD::createDataItem);
+            }
         }
         return dataItems;
     }
 
-    @Override
     public DataItem readDataItem(long id) {
         return null;
     }
 
-    @Override
     public DataItem updateDataItem(DataItem item) {
-        return null;
+        DataItem createdItem = localCRUD.updateDataItem(item);
+        if(remoteCRUD != null){
+            remoteCRUD.updateDataItem(createdItem);
+        }
+        return item;
     }
 
-    @Override
     public boolean deleteDataItem(long id) {
-        return false;
+        if(remoteCRUD!= null){
+            remoteCRUD.deleteDataItem(id);
+        }
+        return localCRUD.deleteDataItem(id);
     }
 
-    @Override
-    public boolean deleteAllDataItem() {
-        return false;
+    public boolean deleteAllDataItem(boolean remote) {
+        return remote ? remoteCRUD.deleteAllDataItem() : localCRUD.deleteAllDataItem();
     }
 
-    @Override
     public boolean authenticateUser(User user) {
         return this.remoteCRUD != null && this.remoteCRUD.authenticateUser(user);
     }
 
-    public boolean deleteAllDataItems(boolean remote) {
-        return remote ? remoteCRUD.deleteAllDataItem() : localCRUD.deleteAllDataItem();
-    }
-
-    public void synchroniseData() {
-        getDataItemsSynchronised();
+    public List<DataItem> synchroniseData() {
+       return getDataItemsSynchronised();
     }
 }

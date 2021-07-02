@@ -15,10 +15,12 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -61,6 +63,7 @@ public class DetailViewActivity extends AppCompatActivity {
     private String errorStatus;
     private EditText dateText, timeText;
     private ListView listView;
+    private List<Contact> contacts = new ArrayList<>();
     private ArrayAdapter<Contact> listViewAdapter;
 
 
@@ -115,25 +118,49 @@ public class DetailViewActivity extends AppCompatActivity {
             item = new DataItem();
         }
         if(item.getExpiry() != -1L && item.getExpiry() != 0L){
-            LocalDateTime expiry = LocalDateTime.ofInstant(Instant.ofEpochSecond(item.getExpiry()), ZoneId.systemDefault());
+            LocalDateTime expiry = LocalDateTime.ofInstant(Instant.ofEpochMilli(item.getExpiry()), ZoneId.systemDefault());
             setDateTimeText(expiry);
         }else {
             LocalDateTime now = LocalDateTime.now();
-            item.setExpiry(now.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond());
+            item.setExpiry(now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             setDateTimeText(now);
         }
 
         Log.i("DetailViewActivity", "got contact ids: " + item.getContacts());
-        List<Contact> contacts = new ArrayList<>();
 
         item.getContacts().forEach(id ->
                 contacts.add(getContactDetailsFromContactInternalId(Long.parseLong(id))));
+        this.contacts = contacts.stream().filter(Objects::nonNull).collect(Collectors.toList());
         this.listView = findViewById(R.id.contactList);
         this.listViewAdapter = new DetailViewActivity.ContactItemsAdapter(
-                this,R.layout.contact_list_item,
-                contacts.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+                this,R.layout.contact_list_item,this.contacts);
+        findViewById(R.id.contactListLabel).setOnClickListener(v -> selectContact());
         this.listView.setAdapter(this.listViewAdapter);
+        this.listView.setOnItemClickListener((parent, view, position, id) -> {
+            Contact selectedContact = listViewAdapter.getItem(position);
+            onContactItemClicked(selectedContact);
+        });
         this.dataBindingHandle.setController(this);
+    }
+
+    private void onContactItemClicked(Contact selectedContact) {
+        sendSms(selectedContact.getMobileNumber());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Send notification");
+        getMenuInflater().inflate(R.menu.contact_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.addContact){
+            selectContact();
+            return true;
+        }
+        return super.onContextItemSelected(item);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -152,11 +179,26 @@ public class DetailViewActivity extends AppCompatActivity {
                 Integer.parseInt(date[1]),
                 Integer.parseInt(date[2]),
                 Integer.parseInt(time[0]),
-                Integer.parseInt(time[1])).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+                Integer.parseInt(time[1])).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         item.setExpiry(expiry);
         returnIntent.putExtra(ARG_ITEM, item);
         this.setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    public void onRemoveContact(Contact contact){
+        this.item.getContacts().remove(String.valueOf(contact.getId()));
+        this.contacts.remove(contact);
+        this.listViewAdapter.notifyDataSetChanged();
+
+    }
+
+    public void onSendSms(Contact contact){
+        sendSms(contact.getMobileNumber());
+    }
+
+    public void onSendEmail(Contact contact){
+        sendEmail(contact.getEmailAddress());
     }
 
     public DataItem getItem() {
@@ -172,7 +214,7 @@ public class DetailViewActivity extends AppCompatActivity {
         startActivityForResult(contactSelectionIntent, 0);
     }
 
-    protected void selectContact(){
+    public void selectContact(){
         Intent contactSelectionIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(contactSelectionIntent, PICK_CONTACT);
     }
@@ -182,17 +224,22 @@ public class DetailViewActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.selectContact){
             this.selectContact();
             return true;
-        } else if(item.getItemId() == R.id.sendSMS){
-            sendSms();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void sendSms() {
-        Uri smsUri = Uri.parse("smsto:00000");
+    private void sendSms(String mobileNumber) {
+        Uri smsUri = Uri.parse("smsto:" + mobileNumber);
         Intent smsIntent = new Intent(Intent.ACTION_SENDTO, smsUri);
         smsIntent.putExtra("sms_body", item.getItemName() + ": " + item.getDescription());
         startActivity(smsIntent);
+    }
+
+    private void sendEmail(String emailAddress) {
+        Uri mailUri = Uri.parse("mailto:" + emailAddress);
+        Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mailUri);
+        mailIntent.putExtra("mail_body", item.getItemName() + ": " + item.getDescription());
+        startActivity(mailIntent);
     }
 
     @Override
@@ -360,7 +407,7 @@ public class DetailViewActivity extends AppCompatActivity {
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            ((EditText) getActivity().findViewById(R.id.in_date)).setText(formatDate(year, month, day));
+            ((EditText) getActivity().findViewById(R.id.in_date)).setText(formatDate(year, month+1, day));
         }
     }
 

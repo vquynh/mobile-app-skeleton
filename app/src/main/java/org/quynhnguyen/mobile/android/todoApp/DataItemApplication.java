@@ -4,10 +4,9 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.RetrofitRemoteDataItemCRUDOperationsImpl;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.RoomDataItemCRUDOperationsImpl;
-import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperationsImpl;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -18,7 +17,7 @@ import java.util.concurrent.Future;
 public class DataItemApplication extends Application {
 
     protected static String logTag = "DataApplication";
-    private IDataItemCRUDOperations crudOperations;
+    private SyncedDataItemCRUDOperations crudOperations;
     private boolean serverAvailable = false;
 
     @Override
@@ -29,20 +28,23 @@ public class DataItemApplication extends Application {
         try {
             if(connectivityFuture.get()){
                 Toast.makeText(this, "Application started...", Toast.LENGTH_SHORT).show();
-                this.crudOperations = new SyncedDataItemCRUDOperationsImpl(
+                this.crudOperations = new SyncedDataItemCRUDOperations(
                         new RoomDataItemCRUDOperationsImpl(this), new RetrofitRemoteDataItemCRUDOperationsImpl());
                 this.serverAvailable = true;
             }else{
-                this.crudOperations = new RoomDataItemCRUDOperationsImpl(this);
+                Toast.makeText(this, "Cannot connect to server. Only local database will be used.", Toast.LENGTH_SHORT).show();
+                this.crudOperations = new SyncedDataItemCRUDOperations(
+                        new RoomDataItemCRUDOperationsImpl(this), null);
             }
         } catch (Exception e) {
             Log.e(logTag, "onCreate(): Got exception", e);
             Toast.makeText(this, "Backend not accessible, got exception: " + e, Toast.LENGTH_SHORT).show();
-            this.crudOperations = new RoomDataItemCRUDOperationsImpl(this);
+            this.crudOperations = new SyncedDataItemCRUDOperations(
+                    new RoomDataItemCRUDOperationsImpl(this), null);
         }
     }
 
-    public IDataItemCRUDOperations getCRUDOperations(){
+    public SyncedDataItemCRUDOperations getCRUDOperations(){
 
         return this.crudOperations;
     }

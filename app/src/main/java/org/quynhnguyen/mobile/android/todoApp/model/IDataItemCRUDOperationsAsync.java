@@ -15,7 +15,11 @@ public interface IDataItemCRUDOperationsAsync {
 
     public void deleteDataItem(long id, Consumer<Boolean> onDeleted);
 
+    public void deleteAllDataItems(boolean remote, Consumer<Boolean> onDeleted);
+
     public void authenticateUser(User user, Consumer<LoggedInUser> onAuthenticated);
+
+    public void synchroniseData(Consumer<List<DataItem>> onSynchronised);
 
 
 }

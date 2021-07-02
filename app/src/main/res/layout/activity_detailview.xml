@@ -16,6 +16,7 @@
             android:error="@{controller.errorStatus}"
             android:id="@+id/itemNameWrapper"
             android:hint="Name"
+            android:padding="15dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
             <com.google.android.material.textfield.TextInputEditText
@@ -30,61 +31,105 @@
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/itemDone"
-            android:text="done"
-            android:checked="@{controller.item.done}"
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
+            android:orientation="horizontal"
+            android:id="@+id/buttonRow"
+            android:padding="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" >
+            <CheckBox
+                android:id="@+id/itemDone"
+                android:text="done"
+                android:checked="@={controller.item.done}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-        <CheckBox
-            android:id="@+id/itemFavourite"
-            android:text="favourite"
-            android:checked="@{controller.item.favourite}"
-            app:layout_constraintTop_toBottomOf="@+id/itemDone"
+            <CheckBox
+                android:id="@+id/itemFavourite"
+                android:text="favourite"
+                android:checked="@={controller.item.favourite}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            app:layout_constraintTop_toBottomOf="@+id/buttonRow"
+            android:orientation="horizontal"
+            android:padding="15dp"
+            android:id="@+id/datePickerRow"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/buttonRow"
+                android:id="@+id/in_date" />
 
-        <com.google.android.material.textfield.TextInputEditText
+            <Button
+                android:id="@+id/datePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/expiry_date"
+                android:onClick="@{(v) -> controller.showDatePickerDialog(v)}" />
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            app:layout_constraintTop_toBottomOf="@+id/datePickerRow"
+            android:orientation="horizontal"
+            android:id="@+id/timePickerRow"
+            android:padding="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/itemFavourite"
-            android:id="@+id/in_date" />
+            android:layout_height="wrap_content" >
 
-        <Button
-            app:layout_constraintTop_toBottomOf="@+id/in_date"
-            android:id="@+id/datePicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/in_date"
-            android:layout_toEndOf="@+id/in_date"
-            android:text="@string/expiry_date"
-            android:onClick="@{(v) -> controller.showDatePickerDialog(v)}" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/in_time"
+                />
 
+            <Button
+                android:id="@+id/timePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/expiry_time"
+                android:onClick="@{(v) -> controller.showTimePickerDialog(v)}" />
+        </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            app:layout_constraintTop_toBottomOf="@+id/timePickerRow"
+            android:orientation="horizontal"
+            android:id="@+id/contactListLabelRow"
+            android:padding="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/datePicker"
-            android:id="@+id/in_time"
-            android:layout_below="@+id/in_date"
-            />
+            android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/timePicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/in_time"
-            android:layout_alignBottom="@+id/in_time"
-            android:layout_toEndOf="@+id/in_time"
-            android:text="@string/expiry_time"
-            android:onClick="@{(v) -> controller.showTimePickerDialog(v)}" />
+            <TextView
+                android:id="@+id/contactListLabel"
+                android:text="Contacts"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <Button
+                android:id="@+id/addContact"
+                android:background="@drawable/baseline_contacts_white_24dp"
+                android:backgroundTint="@color/cardview_dark_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:onClick="@{(v) -> controller.selectContact()}"
+                />
+        </LinearLayout>
+
 
         <ListView
             android:id="@+id/contactList"
-            android:text="Contacts"
-            app:layout_constraintTop_toBottomOf="@+id/timePicker"
+            app:layout_constraintTop_toBottomOf="@+id/contactListLabelRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -96,6 +141,7 @@
             app:layout_constraintTop_toBottomOf="@+id/contactList"
             app:hintEnabled="true"
             android:hint="Description"
+            android:padding="15dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
             <com.google.android.material.textfield.TextInputEditText

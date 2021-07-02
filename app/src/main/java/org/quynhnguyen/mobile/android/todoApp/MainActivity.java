@@ -22,11 +22,11 @@ import androidx.databinding.DataBindingUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
 import org.quynhnguyen.mobile.android.todoApp.databinding.ActivityMainListItemBinding;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
-import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
-import org.jetbrains.annotations.NotNull;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.ui.login.LoginActivity;
 
 import java.util.ArrayList;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<DataItem> listViewAdapter;
     private ProgressBar progressBar;
     private DataItemCRUDOperationsAsyncImpl crudOperations;
+    private boolean sortByExpiryThenFavourite = true;
 
     private class DataItemsAdapter extends ArrayAdapter<DataItem>{
         private final int layoutResource;
@@ -110,15 +111,18 @@ public class MainActivity extends AppCompatActivity {
 
         // 3. load data
         //listViewAdapter.addAll(readAllDataItems());
-        IDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
+        SyncedDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
-        //this.crudOperations = new DataItemCRUDOperationsAsyncImpl(new RetrofitRemoteDataItemCRUDOperationsImpl(), this, progressBar);
         this.crudOperations.readAllDataItems(items ->
         {
             listViewAdapter.addAll(items);
             this.sortListAndScrollToItem(null);
 
         });
+    }
+
+    public int getVisibilityOfExpiredButton(DataItem item) {
+        return item.getExpiry() < System.currentTimeMillis() ? View.VISIBLE : View.INVISIBLE ;
     }
 
     protected void onItemSelected(DataItem item) {
@@ -129,26 +133,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CALL_DETAILVIEW_FOR_CREATE:
-                if(resultCode == Activity.RESULT_OK){
-                    this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
-                }else{
-                    showFeedbackMessage("Returning from detailView with:" + resultCode);
-
-                }
-            case CALL_DETAILVIEW_FOR_EDIT:
-                if(resultCode == Activity.RESULT_OK){
-                    DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
-                    showFeedbackMessage("Updated item: " + editedItem.getItemName());
-                    this.onItemEdited(editedItem);
-                }else {
-                    showFeedbackMessage(" Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
-                }
-            default:
+       if(requestCode == CALL_DETAILVIEW_FOR_CREATE) {
+            if(resultCode == Activity.RESULT_OK){
+                this.onNewItemCreated((DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM));
+            }else{
+                showFeedbackMessage("Returning from detailView with:" + resultCode);
+            }
+       } else if (requestCode == CALL_DETAILVIEW_FOR_EDIT) {
+           if (resultCode == Activity.RESULT_OK) {
+               DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
+               showFeedbackMessage("Updated item: " + editedItem.getItemName());
+               this.onItemEdited(editedItem);
+           } else {
+               showFeedbackMessage(" Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
+           }
+       } else {
                 showFeedbackMessage("Returning with requestCode: " + requestCode + " and resultCode: " + resultCode);
         }
 
@@ -173,9 +176,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
     protected void onNewItemCreated(DataItem item){
-        //showFeedbackMessage("Created item: " + itemName);
-        //TextView newItemView = (TextView) getLayoutInflater().inflate(R.layout.activity_main_list_item, null);
-        //newItemView.setText(itemName);
         this.crudOperations.createDataItem(item, i -> this.listViewAdapter.add(i));
         sortListAndScrollToItem(item);
 
@@ -215,17 +215,44 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sort_menu, menu);
+        getMenuInflater().inflate(R.menu.mainview_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    // TODO: add option menu for simulation action of deleting local/remote todos and sync data
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.sortItems){
+        int id = item.getItemId();
+        if (id == R.id.sortItems) {
             this.sortListAndScrollToItem(null);
             return true;
-        }else{
+        } else if (id == R.id.sortByExpiryFavourite) {
+            this.sortByExpiryThenFavourite = true;
+            this.sortListAndScrollToItem(null);
+            return true;
+        } else if (id == R.id.sortByFavouriteExpiry) {
+            this.sortByExpiryThenFavourite = false;
+            this.sortListAndScrollToItem(null);
+            return true;
+        } else if (id == R.id.deleteLocalItems){
+            this.crudOperations.deleteAllDataItems(false,(deleted)-> {
+                this.items.clear();
+                this.listViewAdapter.notifyDataSetChanged();
+            });
+            return true;
+        } else if (id == R.id.deleteRemoteItems){
+            this.crudOperations.deleteAllDataItems(true,(deleted)-> {
+                showFeedbackMessage("Deleted all remote data items!");
+            });
+            return true;
+        } else if (id == R.id.syncItems){
+            this.crudOperations.synchroniseData((items)-> {
+                this.items.clear();
+                this.items.addAll(items);
+                this.listViewAdapter.notifyDataSetChanged();
+                this.sortListAndScrollToItem(null);
+            });
+            return true;
+        } else {
             return super.onOptionsItemSelected(item);
         }
     }
@@ -240,7 +267,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sortItems(List<DataItem> items) {
-        items.sort(Comparator.comparing(DataItem::isDone).thenComparing(DataItem::getItemName));
+        if(sortByExpiryThenFavourite){
+
+            items.sort(Comparator.comparing(DataItem::isDone)
+                    .thenComparing(DataItem::getExpiry)
+                    .thenComparing(Comparator.comparing(DataItem::isFavourite).reversed()));
+        }else{
+            items.sort(Comparator.comparing(DataItem::isDone)
+                    .thenComparing(Comparator.comparing(DataItem::isFavourite).reversed())
+                    .thenComparing(DataItem::getExpiry));
+        }
     }
 
 }

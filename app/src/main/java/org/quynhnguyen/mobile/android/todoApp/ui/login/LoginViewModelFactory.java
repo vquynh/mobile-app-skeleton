@@ -12,10 +12,8 @@ import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsA
  */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
-    private DataItemCRUDOperationsAsyncImpl crudOperations;
 
-    public LoginViewModelFactory(DataItemCRUDOperationsAsyncImpl crudOperations) {
-        this.crudOperations = crudOperations;
+    public LoginViewModelFactory() {
     }
 
     @NonNull

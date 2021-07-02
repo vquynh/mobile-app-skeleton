@@ -59,6 +59,9 @@ public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
         @Query("select * from dataitem")
         public List<DataItem> readAllItems();
 
+        @Query("delete from dataitem")
+        public int deleteAllItems();
+
         @Query("select * from dataitem where id = (:id)")
         public DataItem readItem(long id);
 
@@ -107,7 +110,7 @@ public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
     @Override
     public boolean deleteAllDataItem() {
-        return false;
+        return roomAccessor.deleteAllItems() > 0;
     }
 
     @Override

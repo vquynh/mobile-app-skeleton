@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="SYNC" android:id="@+id/syncItems" app:showAsAction="ifRoom"
+        android:icon="@drawable/outline_sync_24"/>
+    <item android:title="DELETE LOCAL ITEMS" android:id="@+id/deleteLocalItems" app:showAsAction="never"/>
+    <item android:title="DELETE REMOTE ITEMS" android:id="@+id/deleteRemoteItems" app:showAsAction="never"/>
+    <item android:title="SORT" android:id="@+id/sortItems" app:showAsAction="always"
+        android:icon="@drawable/baseline_sort_24"/>
+    <item android:title="SORT BY EXPIRY+FAVOURITE" android:id="@+id/sortByExpiryFavourite" app:showAsAction="never" />
+    <item android:title="SORT BY FAVOURITE+EXPIRY" android:id="@+id/sortByFavouriteExpiry" app:showAsAction="never" />
+
+</menu>

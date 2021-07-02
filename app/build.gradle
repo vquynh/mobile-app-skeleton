@@ -5,7 +5,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "org.dieschnittstelle.mobile.android.skeleton"
+        applicationId "org.quynhnguyen.mobile.android.todoApp"
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1

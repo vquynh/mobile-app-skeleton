@@ -20,13 +20,6 @@
             android:checked="@={item.done}"
             android:onClick="@{()->controller.onCheckedItemDoneInListView(item)}"
             android:id="@+id/itemDone"/>
-        <TextView
-            android:id="@+id/itemName"
-            android:text="@{item.itemName}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:padding="15dp" />
         <ToggleButton
             android:focusable="false"
             android:layout_width="40dp"
@@ -40,6 +33,21 @@
             android:checked="@={item.favourite}"
             android:onClick="@{()->controller.onCheckedItemFavouriteInListView(item)}"
             />
+        <TextView
+            android:id="@+id/expired"
+            android:background="@drawable/outline_priority_high_24"
+            android:visibility="@{controller.getVisibilityOfExpiredButton(item)}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp" />
+        <TextView
+            android:id="@+id/itemName"
+            android:text="@{item.itemName}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:padding="15dp" />
+
 
     </LinearLayout>
 </layout>

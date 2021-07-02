@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,12 +20,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.quynhnguyen.mobile.android.todoApp.DataItemApplication;
-import org.quynhnguyen.mobile.android.todoApp.MainActivity;
 import org.quynhnguyen.mobile.android.todoApp.R;
 import org.quynhnguyen.mobile.android.todoApp.databinding.ActivityLoginBinding;
-import org.quynhnguyen.mobile.android.todoApp.model.IDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.model.User;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -41,14 +38,14 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.progressBar = new ProgressBar(this);
-        IDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
+        SyncedDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
 
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(this.crudOperations))
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
         final EditText usernameEditText = binding.username;
@@ -116,27 +113,20 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    User user = new User(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                    crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
-                }
-                return false;
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
+        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 User user = new User(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
                 crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
             }
+            return false;
+        });
+
+        loginButton.setOnClickListener(v -> {
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            User user = new User(usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString());
+            crudOperations.authenticateUser(user,loggedInUser -> loginViewModel.updateLoginResult(loggedInUser));
         });
 
     }
