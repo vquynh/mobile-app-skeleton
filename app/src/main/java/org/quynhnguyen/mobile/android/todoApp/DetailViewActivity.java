@@ -268,17 +268,14 @@ public class DetailViewActivity extends AppCompatActivity {
         if(cursor.moveToFirst()){
             String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             long internalContactId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Contact contact = new Contact(internalContactId, contactName, null, null);
+            contact = getContactDetailsFromContactInternalId(internalContactId);
 
-            if(!this.item.getContacts().contains(String.valueOf(internalContactId))){
+            if(!this.item.getContacts().contains(String.valueOf(internalContactId)) && contact!=null){
                 this.item.getContacts().add(String.valueOf(internalContactId));
-                Contact contact = getContactDetailsFromContactInternalId(internalContactId);
-                if(contact != null){
-                    this.listViewAdapter.add(contact);
-                    this.listViewAdapter.notifyDataSetChanged();
-                }
+                this.listViewAdapter.add(contact);
+                this.listViewAdapter.notifyDataSetChanged();
             }
-
-            getContactDetailsFromContactInternalId(internalContactId);
         }else {
             Log.i("DetailviewActivity", "no contact found");
 
@@ -286,8 +283,9 @@ public class DetailViewActivity extends AppCompatActivity {
     }
 
     public Contact getContactDetailsFromContactInternalId(long id){
-        Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
+
+        Cursor cursor = getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
+                null, ContactsContract.RawContacts.CONTACT_ID + "=?",
                 new String[]{String.valueOf(id)}, null);
         String displayName;
 
