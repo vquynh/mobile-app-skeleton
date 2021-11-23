@@ -24,7 +24,7 @@ import org.quynhnguyen.mobile.android.todoApp.R;
 import org.quynhnguyen.mobile.android.todoApp.databinding.ActivityLoginBinding;
 import org.quynhnguyen.mobile.android.todoApp.model.User;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
-import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedTodoItemCRUDOperations;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.progressBar = new ProgressBar(this);
-        SyncedDataItemCRUDOperations crudExecutor = ((TodoManagementApplication) this.getApplication()).getCRUDOperations();
+        SyncedTodoItemCRUDOperations crudExecutor = ((TodoManagementApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
 
         binding = ActivityLoginBinding.inflate(getLayoutInflater());

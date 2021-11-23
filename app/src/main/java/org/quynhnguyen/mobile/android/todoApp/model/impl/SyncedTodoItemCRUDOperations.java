@@ -7,11 +7,11 @@ import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
 
-public class SyncedDataItemCRUDOperations {
+public class SyncedTodoItemCRUDOperations {
     private final IDataItemCRUDOperations localCRUD;
     private final IDataItemCRUDOperations remoteCRUD;
 
-    public SyncedDataItemCRUDOperations(RoomDataItemCRUDOperationsImpl localCRUD, RetrofitRemoteDataItemCRUDOperationsImpl remoteCRUD) {
+    public SyncedTodoItemCRUDOperations(LocalTodoItemCRUDOperationsImpl localCRUD, RemoteTodoItemCRUDOperationsImpl remoteCRUD) {
         this.localCRUD = localCRUD;
         this.remoteCRUD = remoteCRUD;
     }
