@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-public class DataItemApplication extends Application {
+public class TodoManagementApplication extends Application {
 
     protected static String logTag = "DataApplication";
     private SyncedDataItemCRUDOperations crudOperations;

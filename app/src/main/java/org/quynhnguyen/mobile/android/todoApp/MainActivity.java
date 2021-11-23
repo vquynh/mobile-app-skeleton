@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.quynhnguyen.mobile.android.todoApp.databinding.ActivityMainListItemBinding;
 import org.quynhnguyen.mobile.android.todoApp.model.DataItem;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
-import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedTodoItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
 import org.quynhnguyen.mobile.android.todoApp.ui.login.LoginActivity;
 
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 3. load data
         //listViewAdapter.addAll(readAllDataItems());
-        SyncedTodoItemCRUDOperations crudExecutor = ((TodoManagementApplication) this.getApplication()).getCRUDOperations();
+        SyncedDataItemCRUDOperations crudExecutor = ((TodoManagementApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
         this.crudOperations.readAllDataItems(items ->
         {

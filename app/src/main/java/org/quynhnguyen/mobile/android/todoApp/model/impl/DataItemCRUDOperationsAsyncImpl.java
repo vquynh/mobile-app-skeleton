@@ -1,6 +1,7 @@
 package org.quynhnguyen.mobile.android.todoApp.model.impl;
 
 import android.app.Activity;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -14,11 +15,11 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class DataItemCRUDOperationsAsyncImpl implements IDataItemCRUDOperationsAsync {
-    private SyncedTodoItemCRUDOperations crudExecutor;
+    private SyncedDataItemCRUDOperations crudExecutor;
     private Activity uiThreadProvider;
     private ProgressBar progressBar;
 
-    public DataItemCRUDOperationsAsyncImpl(SyncedTodoItemCRUDOperations crudExecutor, Activity uiThreadProvider, ProgressBar progressBar) {
+    public DataItemCRUDOperationsAsyncImpl(SyncedDataItemCRUDOperations crudExecutor, Activity uiThreadProvider, ProgressBar progressBar) {
         this.crudExecutor = crudExecutor;
         this.uiThreadProvider = uiThreadProvider;
         this.progressBar = progressBar;
