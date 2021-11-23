@@ -21,7 +21,7 @@ import org.quynhnguyen.mobile.android.todoApp.model.User;
 
 import java.util.List;
 
-public class LocalTodoItemCRUDOperationsImpl implements IDataItemCRUDOperations {
+public class RoomDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         long timestamp = System.currentTimeMillis();
@@ -71,7 +71,7 @@ public class LocalTodoItemCRUDOperationsImpl implements IDataItemCRUDOperations 
     }
 
     private RoomDataItemCRUDAccess roomAccessor;
-    public LocalTodoItemCRUDOperationsImpl(Context databaseOwner){
+    public  RoomDataItemCRUDOperationsImpl(Context databaseOwner){
         RoomDataItemDatabase db = Room
                 .databaseBuilder(databaseOwner, RoomDataItemDatabase.class, "data-items-database")
                 .addMigrations(MIGRATION_2_3)

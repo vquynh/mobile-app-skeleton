@@ -18,7 +18,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
-public class RemoteTodoItemCRUDOperationsImpl implements IDataItemCRUDOperations {
+public class RetrofitRemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
 
     public static interface TodoWebAPI {
 
@@ -46,7 +46,7 @@ public class RemoteTodoItemCRUDOperationsImpl implements IDataItemCRUDOperations
 
     private TodoWebAPI webAPI;
 
-    public RemoteTodoItemCRUDOperationsImpl() {
+    public RetrofitRemoteDataItemCRUDOperationsImpl() {
         Retrofit apiBase = new Retrofit.Builder()
                 .baseUrl("http://192.168.178.69:8089/api/")
                 .addConverterFactory(GsonConverterFactory.create())

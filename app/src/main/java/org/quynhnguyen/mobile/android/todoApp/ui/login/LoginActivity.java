@@ -19,12 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.quynhnguyen.mobile.android.todoApp.TodoManagementApplication;
+import org.quynhnguyen.mobile.android.todoApp.DataItemApplication;
 import org.quynhnguyen.mobile.android.todoApp.R;
 import org.quynhnguyen.mobile.android.todoApp.databinding.ActivityLoginBinding;
 import org.quynhnguyen.mobile.android.todoApp.model.User;
 import org.quynhnguyen.mobile.android.todoApp.model.impl.DataItemCRUDOperationsAsyncImpl;
-import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedTodoItemCRUDOperations;
+import org.quynhnguyen.mobile.android.todoApp.model.impl.SyncedDataItemCRUDOperations;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.progressBar = new ProgressBar(this);
-        SyncedTodoItemCRUDOperations crudExecutor = ((TodoManagementApplication) this.getApplication()).getCRUDOperations();
+        SyncedDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
         this.crudOperations = new DataItemCRUDOperationsAsyncImpl(crudExecutor, this,progressBar);
 
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
